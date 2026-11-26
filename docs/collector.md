@@ -1,14 +1,13 @@
-# Light Control — collector
+# Light Control — schedule source
 
-The collector requests the public DTEK Kyiv region shutdown page directly. No API key, AI or third-party JSON dependency. It identifies itself, checks robots.txt, makes no attempts to evade blocks, parses strict JSON without executing upstream scripts, validates the daily schedule and preserves the last good file if collection fails.
+Current source: [outage-data-ua](https://github.com/Baskerville42/outage-data-ua), Alexander Tartmin (MIT code license; source data belongs to its provider).
+Public feed: https://raw.githubusercontent.com/Baskerville42/outage-data-ua/main/data/kyiv-region.json
+Original provider: https://www.dtek-krem.com.ua/ua/shutdowns
 
-Source: https://www.dtek-krem.com.ua/ua/shutdowns
+The direct collector is retained for future authorized access only. Its first run stopped because DTEK robots.txt disallows automatic collection. The active workflow does not contact DTEK or circumvent its restrictions.
 
-Public data format researched using https://github.com/Baskerville42/outage-data-ua (Alexander Tartmin, MIT). The collector is independently written; it does not use the upstream browser-based anti-bot bypass.
+The mirror synchronizer checks the upstream success flag, original timestamps (maximum age two hours), today's Kyiv-local schedule, all twelve groups and hourly states. It refuses older snapshots and preserves the last good file on failure. It never relabels old data as newly collected.
 
-## First run
-In GitHub Actions, select Collect public DTEK schedule, Run workflow, main. The workflow runs synthetic tests before the network request. Review the result before enabling the commented 15-minute schedule. A successful run publishes data/kyiv-region.json. Failed runs leave the previous file untouched. The existence of a public page or a permissive robots.txt does not constitute explicit permission to republish data.
+GitHub Actions checks every 15 minutes (execution may be delayed), on manual dispatch and when the workflow changes. Successful runs publish data/kyiv-region.json. The app must independently check freshness, source date and emergency notices; schedules do not measure actual electrical supply. Address search is not implemented. No personal address is stored.
 
-The app must check lastUpdated, the source fact.update and the local date; the schedule is not a measurement of actual electricity availability. Emergency notices may supersede schedules. Address lookup is not implemented. Do not publish personal addresses.
-
-No live collection has been confirmed at initial setup.
+No API key or AI is needed. The upstream public feed can disappear or stop updating; permission for direct collection remains unresolved. Public availability and the upstream code license do not guarantee redistribution rights over the provider's data.
