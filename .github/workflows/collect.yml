@@ -1,9 +1,11 @@
 name: Collect public DTEK schedule
 on:
   workflow_dispatch:
-  # Enable only after a successful manual run and review of site access rules.
-  # schedule:
-  #   - cron: '7,22,37,52 * * * *'
+  push:
+    branches: [main]
+    paths: ['.github/workflows/collect.yml']
+  schedule:
+    - cron: '7,22,37,52 * * * *'
 permissions:
   contents: write
 concurrency:
@@ -20,8 +22,8 @@ jobs:
           python-version: '3.12'
       - name: Run parser tests
         run: python -m unittest discover -s tests -v
-      - name: Collect from official public page
-        run: python scripts/collect.py
+      - name: Sync public JSON mirror
+        run: python -m scripts.sync_mirror
       - name: Publish validated data
         run: |
           git config user.name "github-actions[bot]"
